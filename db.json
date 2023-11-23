@@ -1,0 +1,88 @@
+{
+  "income": [
+    {
+      "month": 1,
+      "amount": 15000
+    },
+    {
+      "month": 2,
+      "amount": 2000
+    },
+    {
+      "month": 3,
+      "amount": 3000
+    },
+    {
+      "month": 4,
+      "amount": 10000
+    },
+    {
+      "month": 5,
+      "amount": 12000
+    },{
+      "month": 6,
+      "amount": 8000
+    },
+    {
+      "month": 7,
+      "amount": 2000
+    },
+    {
+      "month": 8,
+      "amount": 7000
+    },
+    {
+      "month": 9,
+      "amount": 20000
+    },
+    {
+      "month": 10,
+      "amount": 21000
+    },
+    {
+      "month": 11,
+      "amount": 23000
+    },
+    {
+      "month": 12,
+      "amount": 15000
+    }
+  ],
+  "income-per-house": [
+    {
+      "house": "house_1",
+      "amount": 2000
+    },
+    {
+      "house": "house_2",
+      "amount": 5000
+    },
+    {
+      "house": "house_3",
+      "amount": 6000
+    },
+    {
+      "house": "house_4",
+      "amount": 9000
+    }
+  ],
+  "tenants-by-house": [
+    {
+      "house": "house_1",
+      "amount": 30
+    },
+    {
+      "house": "house_2",
+      "amount": 70
+    },
+    {
+      "house": "house_3",
+      "amount": 90
+    },
+    {
+      "house": "house_4",
+      "amount": 50
+    }
+  ]
+  
+}

@@ -1,0 +1,79 @@
+
+
+.dashboard {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+
+}
+
+
+
+.left-controls,
+.center-controls,
+.right-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.left-controls {
+    margin-left: 10px;
+    font-family: sans-serif;
+    span {
+        min-width: 20px;
+    }
+}
+
+.center-controls {
+    margin-left: 400px;
+    margin-top: 10px;
+    font-family: sans-serif;
+}
+
+.right-controls {
+    margin-right: 80px;
+    margin-top: 10px;
+    font-family: sans-serif;
+    //   background-color: aqua;
+}
+
+
+#icon {
+    display: inline-block;
+    width: 20px;
+    /* Adjust the width and height as per your image dimensions */
+    height: 22px;
+    background-image: url("../../assets/Union.png");
+    /* Replace 'icon.png' with the actual image file name and path */
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+.custom-select {
+    width: 200px;
+    /* Adjust the width value as needed */
+    height: 40px;
+}
+
+#dash {
+    font-style: bold;
+    text-align: center;
+    margin-left: 20px;
+}
+
+#home {
+    margin-left: 10px;
+}
+
+.profile-button-wrapper {
+    display: inline-block;
+    position: relative;
+  }

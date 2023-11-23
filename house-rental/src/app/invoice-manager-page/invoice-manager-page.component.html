@@ -1,0 +1,519 @@
+<div class="outer-container" [hidden]="invoicePage">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 col-lg-5">
+                <div class="group-section">
+                    <div class="section">
+                        <label for="search">Search:</label>
+                        <input type="text" id="search" placeholder="Enter search terms" class="search-box" [(ngModel)]="keywords">
+                        <button type="button" class="search-button" (click)="fetchInvoiceByKeywords('0')">Search</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-5">
+                <div class="group-section">
+                    <div class="section">
+
+                        <div class="location-select col-sm-6">
+                            <label for="city">From:</label>
+                            <input type="date" id="create-date" class="form-control location-option" [(ngModel)]="from" (change)="onFromChange($event)">
+                        </div>
+                        <div class="location-select col-sm-6">
+                            <label for="city">House:</label>
+                            <select id="city" class="location-option" [(ngModel)]="selectedHouse" (change)="onHouseChange($event)">
+                                <option value="">Select house</option>
+                                <option *ngFor="let house of houses" [value]="house.id">{{house.name}}</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-2">
+                <div class="group-section">
+                    <div class="section" style="margin-top:2px;">
+                        <label for="status">Status:</label>
+                        <select id="status" class="status-select" (change)="onStatusChange($event)">
+                            <option value="">Select status</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Unpaid">Unpaid</option>
+                            <option value="Cancel">Cancel</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-end">
+                <button class="btn btn-outline-dark" (click)="sendRemindEmailToTenant()">Send email</button>
+                <!-- <button class="btn btn-outline-dark" style="margin-left:10px;" (click)="openPayPage()">Pay</button> -->
+                <!-- <app-new-room-form></app-new-room-form> -->
+                <button class="btn btn-primary" (click)="createNewInvoicePage()" style="margin-left:10px;">New invoice</button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="header-cell" scope="col">
+                                    <div class="d-flex align-items-center">
+                                        <div class="form-check" style="margin-top: 5px;">
+                                            <input class="form-check-input" type="checkbox" id="selectAll" />
+                                            <label class="form-check-label" for="selectAll"></label>
+                                        </div>
+                                        <span>ID</span>
+                                    </div>
+                                </th>
+                                <th class="header-cell" scope="col">Created date</th>
+                                <th class="header-cell" scope="col">Tenant</th>
+                                <th class="header-cell" scope="col">Total</th>
+                                <th class="header-cell" scope="col">Status</th>
+
+                                <th class="header-cell" scope="col"></th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let invoice of invoices; let i = index">
+                                <tr data-toggle="collapse" [attr.data-target]="'#detail' + invoice.id" aria-expanded="false"
+                                  [attr.aria-controls]="'detail' + invoice.id" (click)="toggleCollapse('target' + invoice.id)"
+                                  [ngClass]="{'collapsed': isCollapsed['target' + invoice.id]}">
+                                  <ng-container>
+                                    <td class="d-flex align-items-start">
+                                      <div class="form-check">
+                                        <input [checked]="selectedInvoiceIndex.includes(i)" (click)="addToSelectedIndex($event,i)" class="form-check-input" type="checkbox" [attr.id]="'checkbox' + invoice.id"/>
+                                      </div>
+                                      {{ invoice.id }}
+                                    </td>
+                                    <td>{{ invoice.createdAt | date:'dd/MM/yyyy' }}</td>
+                                    <td>{{ invoice.tenantName }}</td>
+                                    <td>{{ invoice.totalCharge | currency:'VND' }}</td>
+                                    <td>{{ invoice.status }}</td>
+                                    <td>
+                                      <button class="btn btn-sm btn-primary" style="margin-right: 10px;" (click)="onEditButtonClick($event, i)"><i class="fas fa-pen" ></i></button>
+                                      <button class="btn btn-sm btn-danger" (click)="onDeleteButtonClick($event, invoice.id)"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                  </ng-container>
+                                </tr>
+                                <td colspan="6">
+                                  <div class="card-footer collapse" [ngClass]="{'show': isCollapsed['target' + invoice.id]}"
+                                    [attr.id]="'detail' + invoice.id">
+                                    <div class="house-card">
+                                      <ul class="nav nav-tabs">
+                                        <li class="nav-item">
+                                          <a class="nav-link" [ngClass]="{'active': activeTab === 'infoTab'}" (click)="showTab('infoTab')">Information</a>
+                                        </li>
+                                        <li class="nav-item">
+                                          <a class="nav-link" [ngClass]="{'active': activeTab === 'invoiceTab'}" (click)="showTab('invoiceTab')">Detail invoice</a>
+                                        </li>
+                                      </ul>
+                                      <div class="tab-content">
+                                        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'infoTab'}" id="infoTab">
+                                          <div class="card-body">
+                                            <div class="row">
+                                              <div class="col-md-5">
+                                                <div class="card-body">
+                                                  <h3 class="card-title"><strong>{{ invoice.tenantName }}</strong></h3>
+                                                  <div class="carousel-container">
+                                                    <div *ngFor="let image of invoice.imageData; let imageIndex=index">
+                                                      <img [src]="image.url" alt={{invoice.tenantName}} 
+                                                      [ngClass]="{'image-active': selectedIndexArr[i] === imageIndex}"
+                                                      class="fade">
+                                                    </div>
+                                                    <div *ngIf="indicators" class="carousel-dot-container">
+                                                      <span *ngFor="let dot of invoice.imageData; let dotIndex=index" 
+                                                      class="dot" [ngClass]="{'active': selectedIndexArr[i] === dotIndex}"
+                                                      (click)="selectedImage(dotIndex, i)"
+                                                      ></span>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="col-md-7">
+                                                <div class="h-100 d-flex flex-column">
+                                                  <div class="card-body">
+                                                    <h3 class="card-title"><strong>Invoice Information</strong></h3>
+                                                    <div class="row">
+                                                      <div class="col-md-6">
+                                                        <label>ID:</label>
+                                                        <span>{{ invoice.id }}</span>
+                                                      </div>
+                                                      <div class="col-md-6">
+                                                        <label>Creator:</label>
+                                                        <span>{{ invoice.creatorName }}</span>
+                                                      </div>
+                                                      <div class="col-md-6">
+                                                        <label>House:</label>
+                                                        <span>{{ invoice.houseName }}</span>
+                                                      </div>
+                                                      <div class="col-md-6">
+                                                        <label>Tenant:</label>
+                                                        <span>{{ invoice.tenantName }}</span>
+                                                      </div>
+                                                      <div class="col-md-6">
+                                                        <label>Created Date:</label>
+                                                        <span>{{ invoice.createdAt | date:'dd/MM/yyyy' }}</span>
+                                                      </div>
+                                                      <div class="col-md-6">
+                                                        <label>Room:</label>
+                                                        <span>{{ invoice.roomName }}</span>
+                                                      </div>
+                                                      <div class="col-md-6">
+                                                        <label>Closing Date:</label>
+                                                        <input type="date" [ngModel]="invoice.closingDate | date:'yyyy-MM-dd'" (ngModelChange)="invoice.closingDate = $event" [disabled]="disableArr[i]">
+                                                      </div>
+                                                      <div class="col-md-6">
+                                                        <label>Payment Method:</label>
+                                                        <select id="status" class="location-option" [(ngModel)]="invoice.paymentMethod"  [disabled]="disableArr[i]">
+                                                            <option value="Cash" [selected]="invoice.paymentMethod ==='Cash'">Cash</option>
+                                                            <option value="Credit Card" [selected]="invoice.paymentMethod ==='Credit Card'">Credit Card</option>
+                                                            <option value="Other" [selected]="invoice.paymentMethod ==='Other'">Other</option>
+                                                        </select>
+                                                      </div>
+                                                      
+                                                      <div class="col-md-6">
+                                                        <label>Status:</label>
+                                                        <select id="status" class="location-option" [(ngModel)]="invoice.status"  [disabled]="disableArr[i]">
+                                                            <option value="Paid" [selected]="invoice.status ==='Paid'">Paid</option>
+                                                            <option value="Unpaid" [selected]="invoice.status ==='Unpaid'">Unpaid</option>
+                                                            <option value="Cancel" [selected]="invoice.status ==='Cancel'">Cancel</option>
+                                                        </select>
+                                                      </div>
+                                                      
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="card-footer d-flex justify-content-end">
+                                                <button class="btn btn-primary" style="margin-left:10px;" (click)="updateInvoice(invoice, i)">Update</button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'invoiceTab'}" id="invoiceTab">
+                                          <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                              <thead>
+                                                <tr>
+                                                  <th>Type</th>
+                                                  <th>Previous Index</th>
+                                                  <th>Current Index</th>
+                                                  <th>Usage</th>
+                                                  <th>Unit Price</th>
+                                                  <th>Total Price</th>
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                                <div style="color: red;" [hidden]="i !== errIndex">{{facilityHistoryErrorMessage}}</div>
+                                                <tr *ngFor="let facility of invoice.invoiceDetails.facilityHistories">
+                                                  <td>{{ facility.name }}</td>
+                                                  <td>{{ facility.previousIndex }}</td>
+                                                  <td>
+                                                    <input type="number" [ngModel]="facility.currentIndex" (ngModelChange)="facility.currentIndex = $event" [disabled]="disableArr[i]">
+                                                  </td>
+                                                  <td>{{ facility.usage }}</td>
+                                                  <td>{{ facility.unitPrice | currency:'VND' }}/ {{facility.unit}}</td>
+                                                  <td>{{ facility.price | currency:'VND' }}</td>
+                                                </tr>
+                                              </tbody>
+                                              <tfoot>
+                                                <tr>
+                                                  <td colspan="5">Total</td>
+                                                  <td>{{ invoice.totalCharge | currency:'VND' }}</td>
+                                                </tr>
+                                              </tfoot>
+                                            </table>
+                                          </div>
+                                          <div class="card-footer d-flex justify-content-end">
+    
+                                            <button class="btn btn-primary" style="margin-left:10px;" (click)="updateInvoice(invoice, i)">Update</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                              </ng-container>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <nav aria-label="Page navigation example" style="margin-top: 10px;" class="d-flex justify-content-end">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                </li>
+                <li class="page-item" *ngFor="let page of totalPagesArray">
+                    <a class="page-link" *ngIf="isSearchClicked === false || keywords === ''; else searchClicked"  (click)="fetchInvoiceList(from, selectedHouse, selectedStatus, (page-1).toString())">{{ page }}</a>
+                    <ng-template #searchClicked >
+                        <a class="page-link" (click)="fetchInvoiceByKeywords((page-1).toString())">{{ page }}</a>
+                    </ng-template>   
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+
+</div>
+
+<!-- <app-new-invoice-form [hidden]="newInvoiceForm"></app-new-invoice-form> -->
+<div class="outer-box" [hidden]="newInvoiceForm">
+  <button class="back-button btn btn-link" (click)="backToInvoicePage()">
+    <i class="material-icons">keyboard_arrow_left</i> Invoice
+  </button>
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="create-invoice-heading"><strong>Create new invoice</strong></h1>
+        <div>
+            <!-- <button class="btn btn-secondary">Cancel</button> -->
+            <button class="btn btn-primary" style="margin-left: 5px;" (click)="createNewInvoice()">Ok</button>
+        </div>
+    </div>
+    <div class="grey-background">
+        <div class="header">
+            <h3 class="box-title">Information</h3>
+            <div class="form-container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="house">House:</label>
+                            <select id="house" class="form-select" [(ngModel)]="newInvoiceSelectedHouse" (change)="onHouseNewInvoiceChange($event)">
+                                <option value="" selected>Select house</option>
+                                <option *ngFor="let house of housesForNewInvoice" [value]="house.name">{{ house.name }}</option>
+                            </select>
+                        </div>
+                        <div style="color:red; margin-left: 100px;">{{roomErrorMessage}}</div>
+                        <div class="form-group">
+                            <label for="room">Room:</label>
+                            <select id="room" class="form-select" [(ngModel)]="newInvoiceSelectedRoomName" (change)="onRoomNewInvoiceChange($event)">
+                               <option value="" selected>Select room</option>
+                                <option *ngFor="let room of rooms" [value]="room.name">{{ room.name }}</option>
+                            </select>
+                        </div>
+                        <div style="color:red; margin-left: 100px;">{{tenantErrorMessage}}</div>
+                        <div class="form-group">
+                            <label for="tenant">Tenant:</label>
+                            <select id="tenant" class="form-select" [(ngModel)]="newInvoiceSelectedTenant">
+                                <option value="" selected>Select Tenant</option>
+                                <option *ngFor="let tenant of tenants" [value]="tenant.id">{{ tenant.tenantName }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                       
+                        <div class="form-group">
+                            <label for="create-date">Create Date:</label>
+                            <input type="date" id="create-date" class="form-control" [ngModel]="createdDate | date:'yyyy-MM-dd'" disabled="true">
+                        </div>
+                        <div style="color:red; margin-left: 100px;">{{paymentMethodErrorMessage}}</div>
+                        <div class="form-group">
+                            <label for="payment-method">Payment Method:</label>
+                            <select id="payment-method" class="form-select" [(ngModel)]="paymentMethod">
+                                <option value="" selected>Select Payment Method</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="white-background">
+        <h3 class="box-title">Detail Invoice</h3>
+        <div class="form-container">
+          <div class="row">
+            <div class="col-md-6">
+                <div style="color:red; margin-left: 120px;">{{closingDateErrorMessage}}</div>
+              <div class="form-group">
+                <label for="closing-date">Closing Date:</label>
+                <input type="date" id="closing-date" class="form-control" [(ngModel)]="closingDate">
+              </div>
+            </div>
+          </div>
+          <div style="color:red; margin-left:5px;">{{errorMessage}}</div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Previous Index</th>
+                <th>Current Index</th>
+                <th>Usage</th>
+                <th>Unit Price</th>
+                <th>Total Price</th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let facility of facilities; let i= index;">
+                    <td>{{ facility.name }}</td>
+                    <td>{{ facility.previousIndex }}</td>
+                    <td>
+                      <input type="number" class="form-control" [(ngModel)]="currentIndexFacilities[i]" (change)="calPrice($event, i)">
+                    </td>
+                    <td>{{ usageAndPrice[i].usage}}</td>
+                    <td>{{ facility.unitPrice| currency: 'VND'}}/ {{facility.unit}}</td>
+                    <td>{{ usageAndPrice[i].price | currency: 'VND' }}</td>
+                  </tr>
+             
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5">Total</td>
+                <td>{{totalCal() | currency: 'VND'}}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+</div>
+
+
+<!-- <div class="outer-box-pay" [hidden]="payPage">
+    <button class="back-button btn btn-link" (click)="backToInvoicePage()"><i class="material-icons"><</i> Invoice</button>
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="create-invoice-heading"><strong>HD0002</strong></h1>
+        <div>
+            <button class="btn btn-secondary">Cancel</button>
+            <button type="button" class="btn btn-outline-dark" style="margin-left: 10px;">Edit</button>
+            <button type="button" class="btn btn-outline-dark" style="margin-left: 10px;">Send email</button>
+            <button class="btn btn-primary" style="margin-left: 10px;">Pay</button>
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="information">
+          <h2>Information</h2>
+          <div class="box">
+            <div class="row">
+              <div class="col-md-2 label1">Created date:</div>
+              <div class="col-md-10 value1"><span class="value-label">Fake Created Date</span></div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 label1">Room:</div>
+              <div class="col-md-10 value1"><span class="value-label">Fake Room</span></div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 label1">House:</div>
+              <div class="col-md-10 value1"><span class="value-label">Fake House</span></div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 label1">Creator:</div>
+              <div class="col-md-10 value1"><span class="value-label">Fake Creator</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="receiver">
+          <h2>Receiver</h2>
+          <div class="box">
+            <div class="row">
+              <div class="col-md-2 label1">Name:</div>
+              <div class="col-md-10 value1">Fake Name</div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 label1">Phone:</div>
+              <div class="col-md-10 value1">Fake Phone Number</div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 label1">Email:</div>
+              <div class="col-md-10 value1">Fake Email</div>
+            </div>
+            <div class="row">
+                <div class="col-md-2 label1">.</div>
+                <div class="col-md-10 value1"></div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="payment-info">
+          <h2>Payment Information</h2>
+          <button class="btn btn-primary ml-auto">Pay</button>
+          <div class="box">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="label">Status:</div>
+                <div class="value">Fake Status</div>
+              </div>
+              <div class="col-md-4">
+                <div class="label">Time:</div>
+                <div class="value">Fake Time</div>
+              </div>
+              <div class="col-md-4">
+                <div class="label">Payment method:</div>
+                <div class="value">Fake Payment Method</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="white-background">
+        <h3 class="box-title">Detail Invoice</h3>
+        <div class="form-container">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="closing-date">Closing Date:</label>
+                <input type="date" id="closing-date" class="form-control">
+              </div>
+            </div>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Previous Index</th>
+                <th>Current Index</th>
+                <th>Usage</th>
+                <th>Unit Price</th>
+                <th>Total Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Electricity</td>
+                <td>100 Kwh</td>
+                <td>2032 Kwh</td>
+                <td>50 Kwh</td>
+                <td>$0.10</td>
+                <td>$5.00</td>
+              </tr>
+              
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5">Total</td>
+                <td>$15.00</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+  </div> -->
+  
+
+
+
+
+
+

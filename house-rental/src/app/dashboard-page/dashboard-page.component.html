@@ -1,0 +1,122 @@
+<div class="outer-container" style="background-color: #f5f5f5; margin-top: 20px;">
+    <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="box">
+              <div class="icon">
+                <img src="./assets/Icon.png" alt="Icon">
+              </div>
+              <div class="section">
+                <h4 class="section-title">
+                    <p class="label">Revenue:</p>
+                </h4>
+                <div class="data">
+                  <p class="value">{{generalGrow.data[0].number| number:'1.0-0'}} VND</p>
+                </div>
+                <div class="data">
+                  <p class="value">{{generalGrow.data[0].growPercent| number:'1.2-2'}}% since the last month</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="box">
+              <div class="icon">
+                <img src="./assets/Icon.png" alt="Icon">
+              </div>
+              <div class="section">
+                <h4 class="section-title">
+                    <p class="label">Tenants:</p>
+                </h4>
+                <div class="data">
+                    
+                    <p class="value">{{generalGrow.data[1].number| number:'1.0-0'}}</p>
+                  </div>
+                  <div class="data">
+                    <p class="value">{{generalGrow.data[1].growPercent| number:'1.2-2'}}% since the last month</p>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="box">
+              <div class="icon">
+                <img src="./assets/Icon.png" alt="Icon">
+              </div>
+              <div class="section">
+                <h4 class="section-title">
+                    <p class="label">Rented Rooms:</p>
+                </h4>
+                <div class="data">
+                    
+                    <p class="value">{{generalGrow.data[2].number| number:'1.0-0'}}</p>
+                  </div>
+                  <div class="data">
+                    <p class="value">{{generalGrow.data[2].growPercent| number:'1.2-2'}}% since the last month</p>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:20px;">
+        <div class="col-lg-8">
+          <div class="chart-section" style="height: 100%;">
+            <h4 class="section-title">Income</h4>
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="chart-section" style="height: 100%;">
+            <h4 class="section-title">Income by House</h4>
+            <canvas id="doughnutChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:20px;">
+        <div class="col-lg-8">
+          <div class="chart-section" style="height: 100%;">
+            <h4 class="section-title">Tenants by house</h4>
+            <canvas id="lineChart"></canvas>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="chart-section" style="height: 100%;">
+            <h4 class="section-title">Recent activities</h4>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Action</th>
+                  <th scope="col">Previous</th>
+                  <th scope="col">Updated</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Put</td>
+                  <td>Otto</td>
+                  <td>@mdo</td>
+                </tr>
+                <tr>
+                  <th scope="row">2</th>
+                  <td>Patch</td>
+                  <td>Thornton</td>
+                  <td>@fat</td>
+                </tr>
+                <tr>
+                  <th scope="row">3</th>
+                  <td>Post</td>
+                  <td>fb</td>
+                  <td>@twitter</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+</div>
+
+
+  

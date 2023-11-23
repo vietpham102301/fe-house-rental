@@ -1,0 +1,71 @@
+.outer-container {
+    padding: 20px;
+  }
+  
+  .container-fluid {
+    background-color: #ffffff;
+    border: 1px solid #e2e2e2;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .box {
+    display: flex;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .icon {
+    width: 60px;
+    margin-right: 10px;
+  }
+  
+  .section-title {
+    margin: 0;
+  }
+  
+  .data {
+    margin-bottom: 10px;
+  }
+  
+  .label {
+    font-size: 14px;
+    color: #777777;
+    margin-bottom: 5px;
+  }
+  
+  .value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333333;
+  }
+  
+
+  .chart-section {
+    background-color: #ffffff;
+    border: 1px solid #e2e2e2;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .section-title {
+    margin-top: 0;
+  }
+  
+  #barChart {
+    height: 300px;
+    /* Add additional styles for the bar chart */
+  }
+  
+  #pieChart {
+    height: 300px;
+    /* Add additional styles for the pie chart */
+  }
+  
+  #pieChartLegend {
+    /* Add styles for the pie chart legend */
+  }
+  
